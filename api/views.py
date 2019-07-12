@@ -18,8 +18,6 @@ from track.services import (
     update_record,
 )
 
-from .utils import inline_serializer
-
 
 log = logging.getLogger(__name__)
 
@@ -161,18 +159,16 @@ class ActiveRecordView(GenericAPIView):
 
 class ReportWeekView(GenericAPIView):
     class OutputSerializer(serializers.Serializer):
+        class DaySerializer(serializers.Serializer):
+            date = serializers.DateField(read_only=True)
+            records = serializers.DictField(
+                child=serializers.IntegerField(read_only=True), read_only=True
+            )
+            total = serializers.IntegerField(read_only=True)
+
         week_number = serializers.CharField(read_only=True)
         projects = serializers.ListField(read_only=True)
-        days = inline_serializer(
-            many=True,
-            fields={
-                "date": serializers.DateField(read_only=True),
-                "records": serializers.DictField(
-                    child=serializers.IntegerField(read_only=True)
-                ),
-                "total": serializers.IntegerField(read_only=True),
-            },
-        )
+        days = DaySerializer(many=True, read_only=True)
 
     def get(self, request: Request, year: int, week_number: int) -> Response:
         iso_week_number = f"{year}-W{int(week_number):02}"
@@ -186,19 +182,17 @@ class ReportWeekView(GenericAPIView):
 
 class ReportCategoryWeekView(GenericAPIView):
     class OutputSerializer(serializers.Serializer):
+        class DaySerializer(serializers.Serializer):
+            date = serializers.DateField(read_only=True)
+            records = serializers.DictField(
+                child=serializers.IntegerField(read_only=True), read_only=True
+            )
+            total = serializers.IntegerField(read_only=True)
+
         week_number = serializers.CharField(read_only=True)
         category = serializers.CharField(read_only=True)
         projects = serializers.ListField(read_only=True)
-        days = inline_serializer(
-            many=True,
-            fields={
-                "date": serializers.DateField(read_only=True),
-                "records": serializers.DictField(
-                    child=serializers.IntegerField(read_only=True)
-                ),
-                "total": serializers.IntegerField(read_only=True),
-            },
-        )
+        days = DaySerializer(many=True, read_only=True)
 
     def get(
         self, request: Request, category: str, year: int, week_number: int
