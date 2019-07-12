@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import random
 
 import factory
@@ -26,8 +26,14 @@ class RecordFactory(factory.DjangoModelFactory):
     project = factory.SubFactory(ProjectFactory)
     start_time_epoch = factory.Faker(
         "random_int",
-        min=int(datetime.timestamp(datetime.now() - timedelta(days=30))),
-        max=int(datetime.timestamp(datetime.now() - timedelta(minutes=30))),
+        min=int(
+            datetime.timestamp(datetime.now(timezone.utc) - timedelta(days=30))
+        ),
+        max=int(
+            datetime.timestamp(
+                datetime.now(timezone.utc) - timedelta(minutes=30)
+            )
+        ),
     )
     stop_time_epoch = factory.LazyAttribute(
         lambda obj: obj.start_time_epoch + random.randint(0, 30 * 60 * 60)

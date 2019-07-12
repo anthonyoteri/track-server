@@ -31,14 +31,14 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
         class Meta:
             model = Category
-            fields = ("id", "name", "projects", "description")
+            fields = ("name", "projects", "description")
 
         def create(self, validated_data):
             validated_data.pop("projects", None)
 
             return create_category(**validated_data)
 
-    queryset = Category.objects.all()
+    queryset = Category.objects.all().order_by("created")
     serializer_class = CategorySerializer
     lookup_field = "name"
 
@@ -51,7 +51,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
         class Meta:
             model = Project
-            fields = ("id", "categories", "name", "description")
+            fields = ("categories", "name", "description")
 
         @transaction.atomic
         def create(self, validated_data):
@@ -63,7 +63,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
             return project
 
-    queryset = Project.objects.all()
+    queryset = Project.objects.all().order_by("created")
     serializer_class = ProjectSerializer
     lookup_field = "name"
 
@@ -78,7 +78,7 @@ class RecordViewSet(viewsets.ModelViewSet):
 
         class Meta:
             model = Record
-            fields = ("id", "project", "start_time", "stop_time", "elapsed")
+            fields = ("project", "start_time", "stop_time", "elapsed")
 
         @transaction.atomic
         def create(self, validated_data):
