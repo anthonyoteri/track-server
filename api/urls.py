@@ -1,4 +1,3 @@
-from django.conf.urls import url
 from django.urls import include, path
 from rest_framework import routers
 
@@ -19,19 +18,15 @@ router.register(r"projects", ProjectViewSet)
 router.register(r"records", RecordViewSet)
 
 urlpatterns = [
-    url(
-        regex="^records/active/$",
-        view=ActiveRecordView.as_view(),
-        name="record-active",
-    ),
-    url(
-        regex="^reports/week/(?P<year>[0-9]{4})/(?P<week_number>[0-9]{1,2})/$",
-        view=ReportWeekView.as_view(),
+    path("records/active/", ActiveRecordView.as_view(), name="record-active"),
+    path(
+        "reports/week/<int:year>/<int:week_number>/",
+        ReportWeekView.as_view(),
         name="report-week",
     ),
-    url(
-        regex="^reports/week/(?P<year>[0-9]{4})/(?P<week_number>[0-9]{1,2})/(?P<category>[-\w]+)/$",  # noqa E501
-        view=ReportCategoryWeekView.as_view(),
+    path(
+        "reports/week/<int:year>/<int:week_number>/<slug:category>/",
+        ReportCategoryWeekView.as_view(),
         name="report-week-category",
     ),
     path("", include(router.urls)),
